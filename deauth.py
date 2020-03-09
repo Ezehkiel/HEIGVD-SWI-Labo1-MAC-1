@@ -13,8 +13,7 @@ parser.add_argument("-b", "--BSSID", required=True, help="The BSSID of the Wirel
 parser.add_argument("-c", "--Client", required=True,
                     help="The MAC address of the Client you want to kick off the Access Point, use FF:FF:FF:FF:FF:FF if you want a broadcasted deauth to all stations on the targeted Access Point")
 parser.add_argument("-n", "--Number", required=True, help="The number of deauth packets you want to send")
-parser.add_argument("-r", "--Reason", required=False,
-                    help="The code that you want to send. Supported code are : 1, 4, 5 and 8")
+
 
 args = parser.parse_args()
 KO = True
