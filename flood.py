@@ -19,7 +19,7 @@ parser.add_argument("-f", "--file", required=False, help="File of network name")
 args = parser.parse_args()
 
 ssids = []
-# If a file is given we read it
+# If a file is given, we read it
 if args.file:
     network_file = open(args.file, 'r')
     ssids = network_file.readlines()
@@ -29,13 +29,14 @@ else:
     for i in range(numbers):
         # We generate a random name for each SSID
         letters = string.ascii_lowercase
-        ssids.append(''.join(random.choice(letters) for i in range(10)))
+        ssids.append(''.join(random.choice(letters) for j in range(10)))
 
 iface = args.Interface
 frames = []
 print(ssids)
+
+# For each SSID, we craft a Beacon frame
 for ssid in ssids:
-    # For each SSID we craft a Beacon fram
     dot11 = Dot11(type=0, subtype=8, addr1='ff:ff:ff:ff:ff:ff',
                   addr2=str(RandMAC()), addr3=str(RandMAC()))
     beacon = Dot11Beacon(cap='ESS+privacy')
@@ -52,4 +53,6 @@ for ssid in ssids:
 
     frame = RadioTap() / dot11 / beacon / essid / rsn
     frames.append(frame)
+
+# Send packets to layer 2
 sendp(frames, iface=iface, inter=0.01, loop=1)

